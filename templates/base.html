@@ -135,7 +135,10 @@ li a:hover {
 
 body
 {
-  background-color: #404040
+  background-color: #404040;
+  height: auto; /* or 100% */
+    overflow-y: auto;
+    {% comment %} changed for last two lines {% endcomment %}
 }
 
 .form-style{
@@ -211,13 +214,13 @@ body
 </head>
 <div style="background-color:#404040;color:#feda6a;padding:10 10 1 10;border: 1px #feda6a groove;margin-bottom:0;">
 
-<h1 align=center>Audio To Sign Language Tool</h1>
+<h1 align=center>GestureGuard: RCNN for Sign Language</h1>
 </div>
 <br>
 <body>
 <ul id="nav">
   <li class="li"><a class="active" href="{% url 'home' %}">Home</a></li>
-  <li class="li"><a href="{% url 'animation' %}">Convertor</a></li>
+  <li class="li"><a href="{% url 'animation' %}">Text to Sign</a></li>
   {% if not user.is_authenticated %}
   <li class="li"><a href="{% url 'signup' %}">Sign Up</a></li>
   {% endif %}
@@ -226,8 +229,8 @@ body
   {% else %}
     <li class="li"><a href="{% url 'login' %}">Log-in</a></li>
   {% endif %}
-  <li class="li"><a href="{% url 'contact' %}">Contact</a></li>
-  <li class="li"><a href="{% url 'about' %}">About</a></li>
+  <li class="li"><a href="{% url 'contact' %}">Sign to Text</a></li>
+  {% comment %} <li class="li"><a href="{% url 'about' %}">About</a></li> {% endcomment %}
 </ul>
 
 <div class="wrapper" >

@@ -4,12 +4,13 @@
 
 {% block content %}
 <div class="split left">
-	<h2 align="center">Enter Text or Use Mic</h2>
+	<h2 align="center">Enter Text </h2> 
+	{% comment %} or Use Mic</h2> {% endcomment %}
 	<br>
 		<form action="" method="post" align="left">
 		{% csrf_token %}
-					<input type="text" name="sen" class="mytext" id="speechToText" placeholder="">
-					<button type="button" name="button" class="mic" onclick="record()"><img src="{% static 'mic3.png' %}" height="32px" width="38px" /></button>
+					<input type="text" name="sen" class="mytext" id="speechToText" placeholder="Enter english text">
+					{% comment %} <button type="button" name="button" class="mic" onclick="record()"><img src="{% static 'mic3.png' %}" height="32px" width="38px" /></button> {% endcomment %}
 		  			&nbsp&nbsp&nbsp&nbsp
 		  			<input type="submit" name="submit" class="submit">
 

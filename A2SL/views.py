@@ -5,7 +5,9 @@ from django.contrib.auth import login,logout
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from spellchecker import SpellChecker
 import nltk
+nltk.download('punkt') #added
 from django.contrib.staticfiles import finders
 from django.contrib.auth.decorators import login_required
 
@@ -21,15 +23,15 @@ def contact_view(request):
 	return render(request,'contact.html')
 
 @login_required(login_url="login")
+
 def animation_view(request):
 	if request.method == 'POST':
 		text = request.POST.get('sen')
 		#tokenizing the sentence
-		text.lower()
-		#tokenizing the sentence
+		text.lower();text=correct(text)
+		#tokenizing the sentencecoof
 		words = word_tokenize(text)
-
-		tagged = nltk.pos_tag(words)
+		tagged = nltk.pos_tag(words)        #Part-of-Speech Tagging
 		tense = {}
 		tense["future"] = len([word for word in tagged if word[1] == "MD"])
 		tense["present"] = len([word for word in tagged if word[1] in ["VBP", "VBZ","VBG"]])
@@ -37,9 +39,8 @@ def animation_view(request):
 		tense["present_continuous"] = len([word for word in tagged if word[1] in ["VBG"]])
 
 
-
 		#stopwords that will be removed
-		stop_words = set(["mightn't", 're', 'wasn', 'wouldn', 'be', 'has', 'that', 'does', 'shouldn', 'do', "you've",'off', 'for', "didn't", 'm', 'ain', 'haven', "weren't", 'are', "she's", "wasn't", 'its', "haven't", "wouldn't", 'don', 'weren', 's', "you'd", "don't", 'doesn', "hadn't", 'is', 'was', "that'll", "should've", 'a', 'then', 'the', 'mustn', 'i', 'nor', 'as', "it's", "needn't", 'd', 'am', 'have',  'hasn', 'o', "aren't", "you'll", "couldn't", "you're", "mustn't", 'didn', "doesn't", 'll', 'an', 'hadn', 'whom', 'y', "hasn't", 'itself', 'couldn', 'needn', "shan't", 'isn', 'been', 'such', 'shan', "shouldn't", 'aren', 'being', 'were', 'did', 'ma', 't', 'having', 'mightn', 've', "isn't", "won't"])
+		stop_words = set(["mightn't", 're', 'wasn', 'wouldn', 'be', 'has', 'that', 'does', 'shouldn', 'do', "you've",'off', 'for', "didn't", 'm', 'ain', 'haven', "weren't", 'are', "she's", "wasn't", 'its', "haven't", "wouldn't", 'don', 'weren', 's', "you'd", "don't", 'doesn', "hadn't", 'is', 'was', "that'll", "should've", 'a', 'then', 'the','am', 'mustn', 'nor', 'as', "it's", "needn't", 'd', 'have',  'hasn', 'o', "aren't", "you'll", "couldn't", "you're", "mustn't", 'didn', "doesn't", 'll', 'an', 'hadn', 'whom', 'y', "hasn't", 'itself', 'couldn', 'needn', "shan't", 'isn', 'been', 'such', 'shan', "shouldn't", 'aren', 'being', 'were', 'did', 'ma', 't', 'having', 'mightn', 've', "isn't", "won't"])
 
 
 
@@ -105,7 +106,19 @@ def animation_view(request):
 		return render(request,'animation.html')
 
 
+def correct(sentence):
+    # Create a SpellChecker object
+    spell = SpellChecker()
 
+    # Split the sentence into words
+    words = sentence.split()
+
+    # Correct misspelled words
+    corrected_words = [spell.correction(word) for word in words]
+
+    # Join the corrected words back into a sentence
+    corrected_sentence = ' '.join(corrected_words)
+    return corrected_sentence
 
 def signup_view(request):
 	if request.method == 'POST':
