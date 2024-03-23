@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Below code added by RanjeetKumbhar01
+
 import nltk
 NLTK_DATA_DIR = os.path.join(BASE_DIR, 'nltk_data')
 nltk.data.path.append(NLTK_DATA_DIR)

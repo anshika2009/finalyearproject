@@ -8,6 +8,9 @@
   Your browser does not support the video tag.
 </video>
 	<div class="form-style" align="middle" >
-	<a href="{% url 'animation' %}"><button class="button">Click to Start</button></a>
+		<p class="tdd">Your only portal for sign language translation</p>
+	{% comment %} <a href="{% url 'animation' %}"><button class="button">Click to Start</button></a> {% endcomment %}
+	<a href="{% url 'animation' %}"><button class="button">Text to Sign</button></a> <br>
+	<a href="{% url 'signtotext' %}"><button class="button">Sign to Text</button></a>
 	</div>
 {% endblock %}

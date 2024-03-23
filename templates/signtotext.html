@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	
+	{% comment %} <h2>VERSION 1.0.0</h2>
+ 	<hr>
+ 	<h2>CONTACT US</h2>
+	<p class="td">For any queries regarding this website contact us on following:</p>
+	<p class="td">Our Email ID:audio2sl@gmail.com</p>
+	<p class="td">Twitter handle:@audio2sl</p>
+	<p class="td">Contact number:(079)25831703</p>
+ 	<hr>
+	<p class="td">Thank you, For visiting our website</p> {% endcomment %}
+	<div class="form-style" align="middle" >
+		{% comment %} <a href="{% url 'remove_fav' item.id %}" {% endcomment %}
+		{% comment %} <button onclick="openCamera()">Open Webcam</button> {% endcomment %}
+	{% comment %} <a href="{% url 'animation' %}"> <button onclick="#">Open Webcam</button> </a> {% endcomment %}
+	<div class="forsign">
+	<a href="{% url 'detection' %}">
+	<button onclick='#'>Open Webcam</button>
+	</a>
+    {% comment %} <button onclick="closeCamera()">Close Webcam</button> {% endcomment %}
+	<p class="tdd">Press 'q' on your keyboard to close webcam</p>
+</div>
+	</div>
+	<script>
+		let videoStream;
+		
+		function openCamera() {
+			navigator.mediaDevices.getUserMedia({ video: true })
+				.then(stream => {
+					videoStream = stream;
+					const videoElement = document.createElement('video');
+					videoElement.srcObject = stream;
+					document.body.appendChild(videoElement);
+					videoElement.play();
+				})
+				.catch(error => {
+					console.error('Error accessing webcam:', error);
+				});
+		}
+		
+		function closeCamera() {
+			if (videoStream) {
+				const tracks = videoStream.getTracks();
+				tracks.forEach(track => track.stop());
+				document.body.removeChild(document.querySelector('video'));
+			}
+		}
+		</script>
+
+{% endblock %}

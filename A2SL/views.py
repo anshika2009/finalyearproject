@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login,logout
+from django.core.signals import request_finished
+from django.dispatch import receiver
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -10,6 +12,9 @@ import nltk
 nltk.download('punkt') #added
 from django.contrib.staticfiles import finders
 from django.contrib.auth.decorators import login_required
+from keras.models import model_from_json
+import cv2
+import numpy as np
 
 def home_view(request):
 	return render(request,'home.html')
@@ -19,8 +24,8 @@ def about_view(request):
 	return render(request,'about.html')
 
 
-def contact_view(request):
-	return render(request,'contact.html')
+# def contact_view(request):
+# 	return render(request,'contact.html')
 
 @login_required(login_url="login")
 
@@ -28,7 +33,9 @@ def animation_view(request):
 	if request.method == 'POST':
 		text = request.POST.get('sen')
 		#tokenizing the sentence
-		text.lower();text=correct(text)
+		text.lower()
+		if 'name' not in text and 'i am' not in text and 'I am' not in text:
+			text=correct(text)
 		#tokenizing the sentencecoof
 		words = word_tokenize(text)
 		tagged = nltk.pos_tag(words)        #Part-of-Speech Tagging
@@ -144,7 +151,8 @@ def login_view(request):
 			if 'next' in request.POST:
 				return redirect(request.POST.get('next'))
 			else:
-				return redirect('animation')
+				return redirect('home')
+				#return redirect('animation')
 	else:
 		form = AuthenticationForm()
 	return render(request,'login.html',{'form':form})
@@ -152,4 +160,90 @@ def login_view(request):
 
 def logout_view(request):
 	logout(request)
-	return redirect("home")
+	return redirect("login")
+	#return render(request,'home.html') use this
+	#return redirect("home")
+
+@receiver(request_finished)
+def auto_logout(sender, **kwargs):
+    # Perform logout action when the request has finished
+    logout(request)
+
+@login_required(login_url="login")
+def signtotext(request):
+    # json_file = open("signlanguagedetectionmodel48x48.json", "r")
+    # model_json = json_file.read()
+    # json_file.close()
+    # model = model_from_json(model_json)
+    # model.load_weights("signlanguagedetectionmodel48x48.h5")
+    
+    # def extract_features(image):
+    #     feature = np.array(image)
+    #     feature = feature.reshape(1,48,48,1)
+    #     return feature/255.0
+    
+    # cap = cv2.VideoCapture(0)
+    # label = ['A', 'B', 'C', 'D', 'E', 'F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
+    # while True:
+    #     _,frame = cap.read()
+    #     cv2.rectangle(frame,(0,40),(300,300),(0, 165, 255),1)
+    #     cropframe=frame[40:300,0:300]
+    #     cropframe=cv2.cvtColor(cropframe,cv2.COLOR_BGR2GRAY)
+    #     cropframe = cv2.resize(cropframe,(48,48))
+    #     cropframe = extract_features(cropframe)
+    #     pred = model.predict(cropframe) 
+    #     prediction_label = label[pred.argmax()]
+    #     cv2.rectangle(frame, (0,0), (300, 40), (0, 165, 255), -1)
+    #     if prediction_label == 'blank':
+    #         cv2.putText(frame, " ", (10, 30),cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255),2,cv2.LINE_AA)
+    #     else:
+    #         accu = "{:.2f}".format(np.max(pred)*100)
+    #     cv2.putText(frame, f'{prediction_label}  {accu}%', (10, 30),cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255),2,cv2.LINE_AA)
+    #     cv2.imshow("output",frame)
+    #     cv2.waitKey(27)
+    # return render(request,'signtotext.html')
+    # cap.release()
+    # cv2.destroyAllWindows()
+    return render(request,'signtotext.html')
+
+def detection(request):
+    json_file = open("signlanguagedetectionmodel48x48.json", "r")
+    model_json = json_file.read()
+    json_file.close()
+    model = model_from_json(model_json)
+    model.load_weights("signlanguagedetectionmodel48x48.h5")
+    
+    def extract_features(image):
+        feature = np.array(image)
+        feature = feature.reshape(1,48,48,1)
+        return feature/255.0
+    
+    cap = cv2.VideoCapture(0)
+    label = ['A', 'B', 'C', 'D', 'E', 'F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
+    while True:
+        _,frame = cap.read()
+        cv2.rectangle(frame,(0,40),(300,300),(0, 165, 255),1)
+        cropframe=frame[40:300,0:300]
+        cropframe=cv2.cvtColor(cropframe,cv2.COLOR_BGR2GRAY)
+        cropframe = cv2.resize(cropframe,(48,48))
+        cropframe = extract_features(cropframe)
+        pred = model.predict(cropframe) 
+        prediction_label = label[pred.argmax()]
+        cv2.rectangle(frame, (0,0), (300, 40), (0, 165, 255), -1)
+        if prediction_label == 'blank':
+            cv2.putText(frame, " ", (10, 30),cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255),2,cv2.LINE_AA)
+        else:
+            accu = "{:.2f}".format(np.max(pred)*100)
+        cv2.putText(frame, f'{prediction_label}  {accu}%', (10, 30),cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255),2,cv2.LINE_AA)
+        cv2.imshow("output",frame)
+        # cv2.waitKey(27)
+        key=cv2.waitKey(1)
+        if key & 0xFF == ord('q'):
+            break
+        # if key==-1:
+        #     cap.release()
+        #     break
+    # return render(request,'signtotext.html')
+    cap.release()
+    cv2.destroyAllWindows()
+    return render(request,'signtotext.html')
