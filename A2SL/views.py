@@ -37,8 +37,8 @@ def animation_view(request):
 		if 'name' not in text and 'i am' not in text and 'I am' not in text:
 			text=correct(text)
 		#tokenizing the sentencecoof
-		words = word_tokenize(text)
-		tagged = nltk.pos_tag(words)        #Part-of-Speech Tagging
+		words = word_tokenize(text)     #seperates special characters like , . 
+		tagged = nltk.pos_tag(words)        #Part-of-Speech Tagging [('John', 'NNP'), ("'s", 'POS'), ('big', 'JJ')]
 		tense = {}
 		tense["future"] = len([word for word in tagged if word[1] == "MD"])
 		tense["present"] = len([word for word in tagged if word[1] in ["VBP", "VBZ","VBG"]])
@@ -49,17 +49,17 @@ def animation_view(request):
 		#stopwords that will be removed
 		stop_words = set(["mightn't", 're', 'wasn', 'wouldn', 'be', 'has', 'that', 'does', 'shouldn', 'do', "you've",'off', 'for', "didn't", 'm', 'ain', 'haven', "weren't", 'are', "she's", "wasn't", 'its', "haven't", "wouldn't", 'don', 'weren', 's', "you'd", "don't", 'doesn', "hadn't", 'is', 'was', "that'll", "should've", 'a', 'then', 'the','am', 'mustn', 'nor', 'as', "it's", "needn't", 'd', 'have',  'hasn', 'o', "aren't", "you'll", "couldn't", "you're", "mustn't", 'didn', "doesn't", 'll', 'an', 'hadn', 'whom', 'y', "hasn't", 'itself', 'couldn', 'needn', "shan't", 'isn', 'been', 'such', 'shan', "shouldn't", 'aren', 'being', 'were', 'did', 'ma', 't', 'having', 'mightn', 've', "isn't", "won't"])
 
-
-
+#alternative to lemmatizing
+#stemming applies simpler rules to chop off prefixes or suffixes, often resulting in non-dictionary words.
 		#removing stopwords and applying lemmatizing nlp process to words
 		lr = WordNetLemmatizer()
 		filtered_text = []
 		for w,p in zip(words,tagged):
 			if w not in stop_words:
 				if p[1]=='VBG' or p[1]=='VBD' or p[1]=='VBZ' or p[1]=='VBN' or p[1]=='NN':
-					filtered_text.append(lr.lemmatize(w,pos='v'))
+					filtered_text.append(lr.lemmatize(w,pos='v'))  #lemmatized as a verb (pos='v').
 				elif p[1]=='JJ' or p[1]=='JJR' or p[1]=='JJS'or p[1]=='RBR' or p[1]=='RBS':
-					filtered_text.append(lr.lemmatize(w,pos='a'))
+					filtered_text.append(lr.lemmatize(w,pos='a'))  #lemmatized as an adjective (pos='a').
 
 				else:
 					filtered_text.append(lr.lemmatize(w))
@@ -207,21 +207,23 @@ def signtotext(request):
     return render(request,'signtotext.html')
 
 def detection(request):
-    json_file = open("signlanguagedetectionmodel48x48.json", "r")
+    json_file = open("signlanguagedetectionmodel48x48.json", "r")   #model architecture is loaded from a JSON file.
     model_json = json_file.read()
     json_file.close()
     model = model_from_json(model_json)
-    model.load_weights("signlanguagedetectionmodel48x48.h5")
+    model.load_weights("signlanguagedetectionmodel48x48.h5")    #model weights is loaded from a JSON file.
     
     def extract_features(image):
         feature = np.array(image)
-        feature = feature.reshape(1,48,48,1)
+        feature = feature.reshape(1,48,48,1)  #processing one image at a time, 48x48 dimension, 1 is no of channel
         return feature/255.0
     
     cap = cv2.VideoCapture(0)
     label = ['A', 'B', 'C', 'D', 'E', 'F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
     while True:
         _,frame = cap.read()
+        # _ is true or false if image is returned or not
+        #frame is an image array vector captured based on the default frames per second
         cv2.rectangle(frame,(0,40),(300,300),(0, 165, 255),1)
         cropframe=frame[40:300,0:300]
         cropframe=cv2.cvtColor(cropframe,cv2.COLOR_BGR2GRAY)

@@ -1,0 +1,14 @@
+In the case of deep neural networks each neuron in a given layer is fully connected to all the neurons in the previous layer as you can see in the below figure.
+
+
+Because of these large number of connections the number of parameters to be learned increases. As the number of parameters increases the network becomes more complex. This more complexity of the network leads to overfitting.
+
+Especially, in the case of Image data being pixel values of the images as features, the number of input features would be of large dimension. And the most of the pixel portions of the images may not contribute in predicting the output as you can understand from the below picture. The highlighted pixel portions of the image doesn’t contribute in predicting whether it is dog or not.
+
+
+To overcome these challenges, the Convolution Neural Networks were discovered. In this, the input image data will be subjected to set of convolution operations such as filtration and max pooling. Then, the resultant data which will be of lesser dimension compared to the original image data will be subjected to Fully connected layers to predict output as shown in the below figure.
+
+
+By performing the convolution operations, the dimensionality of the data shrinks significantly large. Hence, the number of parameters to be learned decreases. Hence, the network complexity decreases which leads to less chances of overfitting!
+
+This is the reason why we use CNN’s while in the case of Image classification.

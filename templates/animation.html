@@ -53,16 +53,15 @@
 
 <script>
 	//webkitSpeechRecognition api for speech to text conversion
-	function record(){
-		var recognition = new webkitSpeechRecognition();
-		recognition.lang='en-IN';
-
-		recognition.onresult = function(event){
-			console.log(event)
-			document.getElementById('speechToText').value = event.results[0][0].transcript;
-		}
-		recognition.start();
-	 }
+	//function record(){
+	//	var recognition = new webkitSpeechRecognition();
+	//	recognition.lang='en-IN';
+	//	recognition.onresult = function(event){
+	//		console.log(event)
+	//		document.getElementById('speechToText').value = event.results[0][0].transcript;
+	//	}
+	//	recognition.start();
+	// }
 	function play()
 	{
 		var videoSource = new Array();
